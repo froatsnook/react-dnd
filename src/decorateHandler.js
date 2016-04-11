@@ -3,6 +3,7 @@ import { Disposable, CompositeDisposable, SerialDisposable } from 'disposables';
 import shallowEqual from './utils/shallowEqual';
 import shallowEqualScalar from './utils/shallowEqualScalar';
 import isPlainObject from 'lodash/isPlainObject';
+import isValidType from './utils/isValidType';
 import invariant from 'invariant';
 
 export default function decorateHandler({
@@ -91,7 +92,17 @@ export default function decorateHandler({
 
     receiveProps(props) {
       this.handler.receiveProps(props);
-      this.receiveType(getType(props));
+      const type = getType(props);
+      invariant(
+        isValidType(type),
+        'Expected "type" provided as the first argument to DragSource to be ' +
+        'a string, or a function that returns a string given the current props. ' +
+        'Instead, received %s. ' +
+        'Read more: http://gaearon.github.io/react-dnd/docs-drag-source.html',
+        type
+      );
+
+      this.receiveType(type);
     }
 
     receiveType(type) {
